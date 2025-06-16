@@ -82,6 +82,7 @@
       text-align: center;
       min-width: 240px;
       max-width: 90vw;
+      pointer-events: none;
     }
     .overlay-text.active {
       opacity: 1;
@@ -97,7 +98,7 @@
   <div class="center-container" id="mainContent">
     <div class="click-wrapper" id="clickArea">
       <span class="click-text" id="clickText">Bana Tıkla</span>
-      <img src="image1" alt="mızmız" class="main-img" id="mainImg">
+      <img src="image1.jpg" alt="mızmız" class="main-img" id="mainImg">
     </div>
   </div>
   <div class="overlay-text" id="resultText">Çok Yakında mızmız için burada</div>
@@ -105,12 +106,12 @@
     function randomBetween(a, b) {
       return a + Math.random() * (b - a);
     }
-    function createHeart(x, y) {
+    function createHeart(x, y, sizeMin=24, sizeMax=42) {
       const heart = document.createElement('div');
       heart.className = 'heart';
       heart.style.left = x + 'px';
       heart.style.top = y + 'px';
-      heart.style.fontSize = randomBetween(24, 42) + 'px';
+      heart.style.fontSize = randomBetween(sizeMin, sizeMax) + 'px';
       heart.style.color = `hsl(${randomBetween(0,360)},80%,60%)`;
       heart.textContent = '❤';
       document.body.appendChild(heart);
@@ -151,8 +152,26 @@
         setTimeout(() => particle.remove(), 900);
       }
     }
-    function showOverlay() {
-      document.getElementById('resultText').classList.add('active');
+    function showOverlayWithHearts() {
+      const overlay = document.getElementById('resultText');
+      overlay.classList.add('active');
+      // Kalpler overlay aktifken çıkmaya devam etsin
+      let heartsActive = true;
+      const heartInterval = setInterval(() => {
+        if (!heartsActive) return;
+        // Kalpler ekranın rastgele yerinden çıksın
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        const x = randomBetween(w*0.2, w*0.8);
+        const y = randomBetween(h*0.2, h*0.8);
+        createHeart(x, y, 32, 54);
+      }, 180);
+
+      // 2.5 saniye boyunca kalpler çıksın
+      setTimeout(() => {
+        heartsActive = false;
+        clearInterval(heartInterval);
+      }, 2500);
     }
     function hideContent() {
       document.getElementById('mainContent').style.opacity = 0;
@@ -164,7 +183,6 @@
     function handleClick(e) {
       const img = document.getElementById('mainImg');
       const rect = img.getBoundingClientRect();
-      // center of image
       const cx = rect.left + rect.width/2;
       const cy = rect.top + rect.height/2 + window.scrollY;
 
@@ -177,7 +195,7 @@
       }
       setTimeout(() => {
         hideContent();
-        showOverlay();
+        showOverlayWithHearts();
       }, 1200);
     }
     document.getElementById('clickArea').addEventListener('click', handleClick);
