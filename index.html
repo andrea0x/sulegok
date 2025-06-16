@@ -1,10 +1,186 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-    <title>Benim Sitem</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Çok Yakında - mızmız</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f6f3fa;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+    .center-container {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100vw;
+      z-index: 2;
+    }
+    .click-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+    }
+    .click-text {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translate(-50%, 0);
+      font-size: 2rem;
+      color: #e74c3c;
+      font-weight: bold;
+      text-shadow: 1px 2px 6px #fff, 1px 1px 2px #ddd;
+      user-select: none;
+      z-index: 3;
+    }
+    .main-img {
+      width: 220px;
+      height: 220px;
+      object-fit: contain;
+      border-radius: 20px;
+      box-shadow: 0 2px 24px #b39ddb88;
+      transition: transform 0.2s;
+      background: #fff;
+      z-index: 2;
+    }
+    .main-img:active {
+      transform: scale(0.95);
+    }
+    .firework, .heart {
+      position: absolute;
+      pointer-events: none;
+      z-index: 9;
+    }
+    .overlay-text {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.2rem;
+      color: #6C3483;
+      font-weight: bold;
+      background: rgba(255,255,255,0.94);
+      padding: 24px 36px;
+      border-radius: 24px;
+      box-shadow: 0 4px 32px #b39ddb55;
+      opacity: 0;
+      transition: opacity 0.5s;
+      z-index: 20;
+      text-align: center;
+      min-width: 240px;
+      max-width: 90vw;
+    }
+    .overlay-text.active {
+      opacity: 1;
+    }
+    @media (max-width: 480px) {
+      .main-img { width: 120px; height: 120px; }
+      .click-text { font-size: 1.1rem; top: 9px;}
+      .overlay-text { font-size: 1.1rem; padding: 14px 10px;}
+    }
+  </style>
 </head>
 <body>
-    <h1>Merhaba Dünya!</h1>
-    <p>GitHub Pages ile oluşturuldu.</p>
+  <div class="center-container" id="mainContent">
+    <div class="click-wrapper" id="clickArea">
+      <span class="click-text" id="clickText">Bana Tıkla</span>
+      <img src="image1" alt="mızmız" class="main-img" id="mainImg">
+    </div>
+  </div>
+  <div class="overlay-text" id="resultText">Çok Yakında mızmız için burada</div>
+  <script>
+    function randomBetween(a, b) {
+      return a + Math.random() * (b - a);
+    }
+    function createHeart(x, y) {
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.style.left = x + 'px';
+      heart.style.top = y + 'px';
+      heart.style.fontSize = randomBetween(24, 42) + 'px';
+      heart.style.color = `hsl(${randomBetween(0,360)},80%,60%)`;
+      heart.textContent = '❤';
+      document.body.appendChild(heart);
+
+      const dx = randomBetween(-80, 80);
+      const dy = randomBetween(-180, -80);
+
+      heart.animate([
+        {transform: 'scale(1) translate(0,0)', opacity: 1},
+        {transform: `scale(${randomBetween(1.2,2)}) translate(${dx}px,${dy}px)`, opacity: 0}
+      ], {duration: 1100, easing: 'ease-out'});
+
+      setTimeout(() => heart.remove(), 1100);
+    }
+    function createFirework(x, y) {
+      for (let i=0; i<18; ++i) {
+        const particle = document.createElement('div');
+        particle.className = 'firework';
+        particle.style.left = x + 'px';
+        particle.style.top = y + 'px';
+        particle.style.width = '10px';
+        particle.style.height = '10px';
+        particle.style.borderRadius = '50%';
+        particle.style.background = `hsl(${randomBetween(0,360)},85%,60%)`;
+        particle.style.opacity = 0.8;
+        document.body.appendChild(particle);
+
+        const theta = 2 * Math.PI * i / 18;
+        const r = randomBetween(55, 90);
+        const dx = Math.cos(theta) * r;
+        const dy = Math.sin(theta) * r;
+
+        particle.animate([
+          {transform: 'scale(1) translate(0,0)', opacity: 0.9},
+          {transform: `scale(1.8) translate(${dx}px,${dy}px)`, opacity: 0}
+        ], {duration: 900, easing: 'ease-out'});
+
+        setTimeout(() => particle.remove(), 900);
+      }
+    }
+    function showOverlay() {
+      document.getElementById('resultText').classList.add('active');
+    }
+    function hideContent() {
+      document.getElementById('mainContent').style.opacity = 0;
+      setTimeout(()=> {
+        document.getElementById('mainContent').style.display = 'none';
+      }, 700);
+    }
+
+    function handleClick(e) {
+      const img = document.getElementById('mainImg');
+      const rect = img.getBoundingClientRect();
+      // center of image
+      const cx = rect.left + rect.width/2;
+      const cy = rect.top + rect.height/2 + window.scrollY;
+
+      // Efektler
+      for(let i=0; i<20; ++i) {
+        setTimeout(() => createHeart(cx, cy), randomBetween(0, 500));
+      }
+      for(let i=0; i<5; ++i) {
+        setTimeout(() => createFirework(cx, cy), randomBetween(100, 700));
+      }
+      setTimeout(() => {
+        hideContent();
+        showOverlay();
+      }, 1200);
+    }
+    document.getElementById('clickArea').addEventListener('click', handleClick);
+  </script>
 </body>
 </html>
