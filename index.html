@@ -15,6 +15,38 @@
       width: 100vw;
       overflow: hidden;
     }
+    /* Yüklenme ekranı */
+    #loader {
+      position: fixed;
+      left: 0; top: 0; right: 0; bottom: 0;
+      background: #f6f3fa;
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      transition: opacity 0.6s;
+    }
+    .spinner {
+      border: 6px solid #eee;
+      border-top: 6px solid #a569bd;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 22px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+    .loading-text {
+      font-size: 1.3rem;
+      color: #a569bd;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    /* Ana sayfa */
     .center-container {
       min-height: 100vh;
       width: 100vw;
@@ -59,6 +91,7 @@
       pointer-events: none;
       z-index: 9;
     }
+    /* Overlay */
     .overlay-text {
       position: fixed;
       top: 50%;
@@ -81,39 +114,173 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 28px;
+      gap: 18px;
     }
     .overlay-text.active {
       opacity: 1;
+      pointer-events: auto;
     }
     .overlay-gif {
       max-width: 220px;
       max-height: 180px;
       width: 100%;
-      margin-top: 16px;
+      margin-top: 12px;
       border-radius: 16px;
       box-shadow: 0 2px 18px #b39ddb33;
       background: #fff;
       object-fit: contain;
+    }
+    .beta-link {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 8px 22px;
+      border-radius: 20px;
+      background: linear-gradient(90deg,#6C3483,#a569bd);
+      color: #fff;
+      font-weight: 600;
+      font-size: 1.1rem;
+      text-decoration: none;
+      box-shadow: 0 2px 12px #b39ddb33;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s, transform 0.1s;
+      outline: none;
+      border: 2px solid transparent;
+    }
+    .beta-link:active {
+      background: linear-gradient(90deg,#7D3C98,#bb8fce);
+      transform: scale(0.97);
+    }
+    /* Oyun Modalı */
+    #gameModal {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(50,40,68,0.93);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    #gameModal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .game-box {
+      background: #fff;
+      border-radius: 22px;
+      box-shadow: 0 4px 32px #b39ddb55;
+      padding: 16px 12px 20px 12px;
+      min-width: 300px;
+      min-height: 350px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      max-width: 95vw;
+      max-height: 95vh;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 18px;
+      font-size: 2rem;
+      background: none;
+      border: none;
+      color: #c0392b;
+      cursor: pointer;
+      z-index: 11;
+      font-weight: bold;
+      transition: color 0.18s;
+    }
+    .close-btn:hover {
+      color: #922b21;
+    }
+    /* Basit Oyun (Reflex - Tıklama Oyunu) */
+    #gameCanvas {
+      background: linear-gradient(120deg,#f6f3fa 60%,#bb8fce 100%);
+      border-radius: 14px;
+      box-shadow: 0 2px 10px #b39ddb20;
+      cursor: pointer;
+      touch-action: manipulation;
+      margin-top: 28px;
+      margin-bottom: 14px;
+      display: block;
+    }
+    .game-title {
+      font-size: 1.4rem;
+      color: #6C3483;
+      font-weight: bold;
+      margin-bottom: 2px;
+      margin-top: 10px;
+      text-align: center;
+    }
+    .game-desc {
+      font-size: 1rem;
+      color: #8e44ad;
+      margin-bottom: 2px;
+      text-align: center;
+    }
+    .game-score {
+      font-size: 1.2rem;
+      color: #34495e;
+      font-weight: 700;
+      margin-bottom: 0;
+      margin-top: 0;
+      text-align: center;
     }
     @media (max-width: 700px) {
       .main-img { width: 95vw; height: auto; max-height: 40vh; }
       .click-text { font-size: 1.3rem; margin-bottom: 20px;}
       .overlay-text { font-size: 1.1rem; padding: 18px 8px 22px 8px;}
       .overlay-gif { max-width: 120px; max-height: 100px; }
+      .game-box { min-width: 90vw; min-height: 300px; max-width: 98vw;}
+      #gameCanvas { margin-top: 14px;}
     }
   </style>
 </head>
 <body>
-  <div class="center-container" id="mainContent">
+  <!-- Yüklenme Ekranı -->
+  <div id="loader">
+    <div class="spinner"></div>
+    <div class="loading-text">Yükleniyor...</div>
+  </div>
+  <!-- Ana İçerik -->
+  <div class="center-container" id="mainContent" style="display:none;">
     <div class="click-text" id="clickText">Bana Tıkla</div>
     <img src="image1.jpg" alt="mızmız" class="main-img" id="mainImg">
   </div>
+  <!-- Çok Yakında Overlay -->
   <div class="overlay-text" id="resultText">
-    Çok Yakında mızmız için burada
+    <span>Çok Yakında mızmız için burada</span>
     <img src="gif1.gif" alt="gif" class="overlay-gif" id="gif1">
+    <button class="beta-link" id="betaBtn">(Beta) Oyna</button>
+  </div>
+  <!-- Oyun Modal -->
+  <div id="gameModal">
+    <div class="game-box">
+      <button class="close-btn" id="closeGameBtn">&times;</button>
+      <div class="game-title">Refleks Oyunu (Beta)</div>
+      <div class="game-desc">Açılan daireye <b>hemen</b> tıkla ve puan topla! <br>Ne kadar hızlısın?</div>
+      <div class="game-score" id="gameScore"></div>
+      <canvas id="gameCanvas" width="340" height="340"></canvas>
+    </div>
   </div>
   <script>
+    // YÜKLENME EKRANI
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        document.getElementById('loader').style.opacity = 0;
+        setTimeout(function() {
+          document.getElementById('loader').style.display = 'none';
+          document.getElementById('mainContent').style.display = 'flex';
+        }, 700);
+      }, 1200); // En az 1.2s yüklenme
+    });
+
+    // KALP ve HAVAİ FİŞEK EFEKTLERİ
     function randomBetween(a, b) {
       return a + Math.random() * (b - a);
     }
@@ -212,6 +379,94 @@
 
     document.getElementById('mainImg').addEventListener('click', handleClick);
     document.getElementById('clickText').addEventListener('click', handleClick);
+
+    // (Beta) Butonu ile Oyun Modalı
+    const gameModal = document.getElementById('gameModal');
+    const betaBtn = document.getElementById('betaBtn');
+    const closeGameBtn = document.getElementById('closeGameBtn');
+    betaBtn.addEventListener('click', () => {
+      gameModal.classList.add('active');
+      startGame();
+    });
+    closeGameBtn.addEventListener('click', () => {
+      gameModal.classList.remove('active');
+      stopGame();
+    });
+
+    // -------- BASİT REFLEKS OYUNU --------
+    // Oyunun amacı: Daireye ne kadar hızlı tıklarsan o kadar puan!
+    let gameActive = false, score = 0, timeoutId = null, startTime = null, bestScore = null;
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreDiv = document.getElementById('gameScore');
+    let circle = null;
+
+    function drawCircle(x, y, r, color) {
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, 2 * Math.PI);
+      ctx.fillStyle = color;
+      ctx.shadowColor = "#a569bd";
+      ctx.shadowBlur = 12;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function showCircle() {
+      clearCanvas();
+      // Daireyi rastgele bir yere koy
+      const r = randomBetween(30, 55);
+      const x = randomBetween(r+10, canvas.width-r-10);
+      const y = randomBetween(r+10, canvas.height-r-10);
+      drawCircle(x, y, r, "#a569bd");
+      circle = {x, y, r};
+      startTime = Date.now();
+      // 1.25 saniye içinde tıklanmazsa oyun biter
+      timeoutId = setTimeout(gameOver, 1250);
+    }
+
+    function startGame() {
+      gameActive = true;
+      score = 0;
+      bestScore = null;
+      scoreDiv.innerHTML = `Skor: 0`;
+      setTimeout(showCircle, 800);
+    }
+
+    function stopGame() {
+      gameActive = false;
+      clearTimeout(timeoutId);
+      clearCanvas();
+      scoreDiv.innerHTML = "";
+    }
+
+    function gameOver() {
+      gameActive = false;
+      clearTimeout(timeoutId);
+      clearCanvas();
+      // Son skor ve rekoru göster
+      if (bestScore === null || score > bestScore) bestScore = score;
+      scoreDiv.innerHTML = `<b>Oyun Bitti!</b><br>Skorun: ${score}<br>Rekor: ${bestScore || score}<br><span style="font-size:0.9em;color:#888;">Kapatıp tekrar oyna!</span>`;
+    }
+
+    canvas.addEventListener('click', function(e) {
+      if (!gameActive || !circle) return;
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      const dx = mx - circle.x;
+      const dy = my - circle.y;
+      if (dx*dx + dy*dy <= circle.r*circle.r) {
+        // Doğru tıklandı!
+        clearTimeout(timeoutId);
+        score++;
+        scoreDiv.innerHTML = `Skor: ${score}`;
+        setTimeout(showCircle, randomBetween(350, 900));
+      }
+    });
   </script>
 </body>
 </html>
