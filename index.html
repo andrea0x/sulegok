@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Şule</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffb6c1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 18px;
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #evetBtn {
+      display: none;
+      font-size: 24px;
+      padding: 15px 40px;
+    }
+
+    .heart {
+      position: absolute;
+      font-size: 24px;
+      animation: fly 2s linear infinite;
+    }
+
+    @keyframes fly {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-200px) scale(1.5);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>merhaba sule tanisalim mi</h1>
+
+  <div class="buttons" id="hayirButtons">
+    <button>hayır</button>
+    <button>hayır</button>
+  </div>
+
+  <button id="evetBtn">evet</button>
+
+  <script>
+    setTimeout(() => {
+      document.getElementById('hayirButtons').style.display = 'none';
+      document.getElementById('evetBtn').style.display = 'block';
+    }, 4000);
+
+    document.getElementById('evetBtn').addEventListener('click', () => {
+      for (let i = 0; i < 30; i++) {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.innerHTML = '❤️';
+        heart.style.left = Math.random() * window.innerWidth + 'px';
+        heart.style.top = Math.random() * window.innerHeight + 'px';
+        document.body.appendChild(heart);
+
+        setTimeout(() => {
+          heart.remove();
+        }, 2000);
+      }
+    });
+  </script>
+</body>
+</html>
